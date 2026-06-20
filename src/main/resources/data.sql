@@ -1,4 +1,4 @@
-INSERT INTO produto (descricao, valor, unidade, quantidade_estoque, controle_estoque) VALUES
+INSERT INTO produto (descricao, valor_uni, unidade, quantidade_estoque, controle_estoque) VALUES
 ('Picanha', 89.90, 'kg', 50, 1),
 ('Fraldinha', 55.90, 'kg', 30, 1),
 ('Costela', 39.90, 'kg', 40, 1),
