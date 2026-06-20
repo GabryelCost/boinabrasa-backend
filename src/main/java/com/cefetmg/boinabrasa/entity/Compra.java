@@ -23,7 +23,7 @@ public class Compra {
 
     @ManyToOne
     @JoinColumn(name="id_fornecedor", nullable = false)
-    private Pessoa forncedor;
+    private Pessoa fornecedor;
 
 
 }
