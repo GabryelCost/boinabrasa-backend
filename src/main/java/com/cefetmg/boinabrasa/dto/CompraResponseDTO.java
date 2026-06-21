@@ -2,6 +2,7 @@ package com.cefetmg.boinabrasa.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class CompraResponseDTO {
     private LocalDate dataCompra;
     private BigDecimal valorCompra;
     private String nomeFornecedor;
+    private List<CompraProdutoResponseDTO> itens;
 }
