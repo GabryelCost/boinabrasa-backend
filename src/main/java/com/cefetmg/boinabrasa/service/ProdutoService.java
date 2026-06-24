@@ -22,13 +22,16 @@ public class ProdutoService {
     public List<ProdutoResponseDTO> listarTodos() {
         List<Produto> produtos = produtoRepository.findAll();
         return produtos.stream()
+                // filtra para listar apenas quem esta ativo
+                .filter(Produto::getAtivo)
                 .map(p -> new ProdutoResponseDTO(
-                    p.getId(), 
-                    p.getDescricao(), 
-                    p.getValorUni(), 
-                    p.getUnidade(), 
-                    p.getQuantidadeEstoque(), 
-                    p.getControleEstoque()
+                        p.getId(),
+                        p.getDescricao(),
+                        p.getValorUni(),
+                        p.getUnidade(),
+                        p.getQuantidadeEstoque(),
+                        p.getControleEstoque(),
+                        p.getAtivo() 
                 ))
                 .collect(Collectors.toList());
     }
@@ -43,8 +46,9 @@ public class ProdutoService {
         produto.setControleEstoque(request.getControleEstoque());
 
         Produto p = produtoRepository.save(produto);
-        
-        return new ProdutoResponseDTO(p.getId(), p.getDescricao(), p.getValorUni(), p.getUnidade(), p.getQuantidadeEstoque(), p.getControleEstoque());
+
+        return new ProdutoResponseDTO(p.getId(), p.getDescricao(), p.getValorUni(), p.getUnidade(),
+                p.getQuantidadeEstoque(), p.getControleEstoque(), true);
     }
 
     @Transactional
@@ -59,15 +63,18 @@ public class ProdutoService {
         produtoExistente.setControleEstoque(request.getControleEstoque());
 
         Produto p = produtoRepository.save(produtoExistente);
-        
-        return new ProdutoResponseDTO(p.getId(), p.getDescricao(), p.getValorUni(), p.getUnidade(), p.getQuantidadeEstoque(), p.getControleEstoque());
+
+        return new ProdutoResponseDTO(p.getId(), p.getDescricao(), p.getValorUni(), p.getUnidade(),
+                p.getQuantidadeEstoque(), p.getControleEstoque(), p.getAtivo());
     }
 
     @Transactional
     public void excluir(Long id) {
-        if (!produtoRepository.existsById(id)) {
-            throw new RuntimeException("Não é possível excluir. Produto não encontrado com o ID: " + id);
-        }
-        produtoRepository.deleteById(id);
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado com o ID: " + id));
+
+        // em vez de deletar, inativa
+        produto.setAtivo(false);
+        produtoRepository.save(produto);
     }
 }

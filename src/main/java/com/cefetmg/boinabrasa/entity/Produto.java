@@ -27,4 +27,7 @@ public class Produto {
 
     @Column(nullable = false)
     private Boolean controleEstoque;
+
+    @Column(nullable = false)
+    private Boolean ativo = true; // tdo produto nasce ativo por padrao 
 }

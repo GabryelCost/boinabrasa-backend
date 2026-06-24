@@ -24,4 +24,6 @@ public class ProdutoRequestDTO {
 
     @NotNull(message = "Verificação obrigatória")
     private Boolean controleEstoque;
+
+    private Boolean ativo; // isso aq e novo
 }

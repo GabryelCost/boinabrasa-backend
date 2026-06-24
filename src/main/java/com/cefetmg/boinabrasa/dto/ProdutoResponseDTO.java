@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor 
-@AllArgsConstructor 
+@AllArgsConstructor
 public class ProdutoResponseDTO {
     private Long id;
     private String descricao;
@@ -15,4 +15,5 @@ public class ProdutoResponseDTO {
     private String unidade;
     private Integer quantidadeEstoque;
     private Boolean controleEstoque;
+    private Boolean ativo; // isso aq e novo
 }
