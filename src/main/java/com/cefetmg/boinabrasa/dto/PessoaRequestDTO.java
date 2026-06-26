@@ -19,6 +19,6 @@ public class PessoaRequestDTO {
     @NotBlank(message = "O CPF ou CNPJ é obrigatório.")
     private String cpfCnpj;
 
-    @NotNull(message = "O tipo de pessoa (PF ou PJ) é obrigatório.")
+    @NotNull(message = "O cargo de pessoa é obrigtório.")
     private TipoPessoa tipo;
 }
