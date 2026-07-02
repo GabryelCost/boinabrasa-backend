@@ -28,6 +28,7 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("boinabrasa-api")
                     .withSubject(usuario.getLogin())
+                    .withClaim("role", usuario.getRole().name())
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
