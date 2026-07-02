@@ -79,4 +79,44 @@ public class AuthController {
         }
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/sync/{pessoaId}")
+    public ResponseEntity syncUser(@PathVariable Long pessoaId, @RequestBody com.cefetmg.boinabrasa.dto.SyncUserRequestDTO data) {
+        Pessoa pessoa = pessoaRepository.findById(pessoaId).orElse(null);
+        if (pessoa == null) {
+            return ResponseEntity.badRequest().body("Pessoa not found");
+        }
+
+        Usuario existingUser = repository.findByPessoaId(pessoaId);
+        
+        if (data.getRole() == null || data.getRole().equalsIgnoreCase("FORNECEDOR")) {
+            if (existingUser != null) {
+                repository.delete(existingUser);
+            }
+            return ResponseEntity.ok().build();
+        }
+
+        com.cefetmg.boinabrasa.entity.Role newRole = com.cefetmg.boinabrasa.entity.Role.valueOf(data.getRole().toUpperCase());
+
+        if (existingUser != null) {
+            existingUser.setLogin(data.getLogin());
+            existingUser.setRole(newRole);
+            if (data.getSenha() != null && !data.getSenha().isEmpty()) {
+                existingUser.setSenha(passwordEncoder.encode(data.getSenha()));
+            }
+            repository.save(existingUser);
+        } else {
+            if (data.getSenha() == null || data.getSenha().isEmpty()) {
+                return ResponseEntity.badRequest().body("Senha is required for new user");
+            }
+            Usuario newUser = Usuario.builder()
+                    .login(data.getLogin())
+                    .senha(passwordEncoder.encode(data.getSenha()))
+                    .role(newRole)
+                    .pessoa(pessoa)
+                    .build();
+            repository.save(newUser);
+        }
+        return ResponseEntity.ok().build();
+    }
 }

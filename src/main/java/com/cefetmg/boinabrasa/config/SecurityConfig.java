@@ -29,36 +29,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                
-                // Produtos: Atendente pode gerenciar, Gerente também. Açougueiro pode consultar.
-                .requestMatchers(HttpMethod.GET, "/produtos/**").hasAnyRole("ATENDENTE", "ACOUGUEIRO", "GERENTE")
-                .requestMatchers("/produtos/**").hasAnyRole("ATENDENTE", "GERENTE")
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
-                // Vendas: Atendente e Gerente gerenciam
-                .requestMatchers("/vendas/**").hasAnyRole("ATENDENTE", "GERENTE")
+                        // Produtos: Todos os logados podem consultar
+                        .requestMatchers(HttpMethod.GET, "/produtos/**").authenticated()
+                        .requestMatchers("/produtos/**").hasAnyRole("ATENDENTE", "GERENTE")
 
-                // Compras: Atendente e Gerente gerenciam
-                .requestMatchers("/compras/**").hasAnyRole("ATENDENTE", "GERENTE")
+                        // Vendas: Todos os logados podem consultar
+                        .requestMatchers(HttpMethod.GET, "/vendas/**").authenticated()
+                        .requestMatchers("/vendas/**").hasAnyRole("ATENDENTE", "GERENTE")
 
-                // Pessoas (Clientes, Fornecedores, Funcionários): Gerente gerencia
-                .requestMatchers("/pessoas/**").hasRole("GERENTE")
+                        // Compras: Todos os logados podem consultar
+                        .requestMatchers(HttpMethod.GET, "/compras/**").authenticated()
+                        .requestMatchers("/compras/**").hasAnyRole("ATENDENTE", "GERENTE")
 
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+                        // Pessoas: Todos os logados podem consultar (para o dashboard)
+                        .requestMatchers(HttpMethod.GET, "/pessoas/**").authenticated()
+                        .requestMatchers("/pessoas/**").hasRole("GERENTE")
+
+                        .anyRequest().authenticated())
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
