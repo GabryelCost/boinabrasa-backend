@@ -39,7 +39,7 @@ public class SecurityConfig {
 
                         // Produtos: Todos os logados podem consultar
                         .requestMatchers(HttpMethod.GET, "/produtos/**").authenticated()
-                        .requestMatchers("/produtos/**").hasAnyRole("ATENDENTE", "GERENTE")
+                        .requestMatchers("/produtos/**").hasAnyRole("GERENTE")
 
                         // Vendas: Todos os logados podem consultar
                         .requestMatchers(HttpMethod.GET, "/vendas/**").authenticated()
@@ -51,7 +51,7 @@ public class SecurityConfig {
 
                         // Pessoas: Todos os logados podem consultar (para o dashboard)
                         .requestMatchers(HttpMethod.GET, "/pessoas/**").authenticated()
-                        .requestMatchers("/pessoas/**").hasRole("GERENTE")
+                        .requestMatchers("/pessoas/**").hasAnyRole("GERENTE")
 
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
