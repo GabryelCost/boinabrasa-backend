@@ -11,12 +11,16 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TokenService {
 
     @Value("${api.security.token.secret:my-secret-key-123}")
     private String secret;
+
+    private final Set<String> tokenBlacklist = ConcurrentHashMap.newKeySet();
 
     public String generateToken(Usuario usuario) {
         try {
@@ -32,6 +36,9 @@ public class TokenService {
     }
 
     public String validateToken(String token) {
+        if (tokenBlacklist.contains(token)) {
+            return "";
+        }
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
@@ -42,6 +49,10 @@ public class TokenService {
         } catch (JWTVerificationException exception) {
             return "";
         }
+    }
+
+    public void invalidateToken(String token) {
+        tokenBlacklist.add(token);
     }
 
     private Instant genExpirationDate() {
