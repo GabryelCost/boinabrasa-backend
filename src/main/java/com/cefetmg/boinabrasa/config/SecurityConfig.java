@@ -53,6 +53,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/pessoas/**").authenticated()
                         .requestMatchers("/pessoas/**").hasAnyRole("GERENTE")
 
+                        // Usuários: Protegendo a rota que estava estourando 403 no seu front-end
+                        .requestMatchers(HttpMethod.GET, "/usuarios/**").authenticated()
+                        .requestMatchers("/usuarios/**").hasAnyRole("GERENTE")
+
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -70,13 +74,12 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-   @Bean
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Liberando o localhost e o link oficial do seu deploy no Netlify
         config.setAllowedOrigins(List.of(
-            "http://localhost:4200", 
-            "https://boinabrasa1.netlify.app"
+                "http://localhost:4200", 
+                "https://boinabrasa1.netlify.app"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
